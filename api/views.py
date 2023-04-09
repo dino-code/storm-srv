@@ -10,7 +10,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-from api.serializers import RegisterSerializer, LoginSerializer
+from api.serializers import RegisterSerializer, LoginSerializer, UserSerializer
         
 
 
@@ -42,11 +42,14 @@ class LoginView(APIView):
         )
         if user:
             refresh = RefreshToken.for_user(user)
+            user_serializer = UserSerializer(user)
             return Response({
+                'user': user_serializer.data,
                 'access': str(refresh.access_token),
                 'refresh': str(refresh),
             })
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 class TokenRefreshView(APIView):
     def post(self, request):
