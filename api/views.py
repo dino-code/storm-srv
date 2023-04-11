@@ -11,11 +11,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from api.serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from .models import UserProfile
+from .serializers import UserProfileUpdateSerializer
         
 
+class UserProfileUpdateView(generics.UpdateAPIView):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserProfileUpdateSerializer
 
+    def get_object(self):
+        return self.request.user
 
 class RegisterView(APIView):
+    permission_classes = []
+
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
@@ -23,16 +32,21 @@ class RegisterView(APIView):
             refresh_token = RefreshToken.for_user(user)
             access_token = str(refresh_token.access_token)
             refresh_token = str(refresh_token)
-            
-            return Response({
-                'access': access_token,
-                'refresh': refresh_token,
-                "message": "Registration successful"
-            })
+            if user:
+                refresh = RefreshToken.for_user(user)
+                user_serializer = UserSerializer(user)
+                return Response({
+                    'user': user_serializer.data,
+                    'access': str(refresh.access_token),
+                    'refresh': str(refresh),
+                    "message": "Registration successful"
+                })
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
+    permission_classes = []
+
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -49,6 +63,19 @@ class LoginView(APIView):
                 'refresh': str(refresh),
             })
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+
+class LogoutView(APIView):
+    permission_classes = []
+
+    def post(self, request):
+        try:
+            refresh_token = request.data['refresh']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({"message": "Logout successful"}, status=status.HTTP_204_NO_CONTENT)
+        except TokenError:
+            return Response({"message": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class TokenRefreshView(APIView):

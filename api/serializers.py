@@ -24,8 +24,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserProfile
         fields = '__all__'
 
-
-from .serializers import UserProfileSerializer
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserProfile
+        fields = [
+            'tier',
+            'profile_picture',
+            'phone_number',
+            'company_name',
+            'job_title',
+            'bio',
+            'social_media_links',
+        ]
 
 class UserSerializer(serializers.ModelSerializer):
     userprofile = UserProfileSerializer(read_only=True)
