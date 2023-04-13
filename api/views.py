@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError, AccessToken
 from api.serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from .models import UserProfile
 from .serializers import UserProfileUpdateSerializer
@@ -32,12 +32,13 @@ class RegisterView(APIView):
             
             if user:
                 refresh_token = RefreshToken.for_user(user)
-                access_token = str(refresh_token.access_token)
+                access_token = AccessToken.for_user(user)
                 refresh_token = str(refresh_token)
+                access_token = str(access_token)
                 user_serializer = UserSerializer(user)
                 return Response({
                     'user': user_serializer.data,
-                    'access': str(refresh_token.access_token),
+                    'access': str(access_token),
                     'refresh': str(refresh_token),
                     "message": "Registration successful"
                 })
