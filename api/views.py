@@ -1,19 +1,13 @@
-from django.shortcuts import render
-
-# Create your views here.
-from rest_framework import generics, permissions
-from rest_framework.response import Response
-from rest_framework.authtoken.models import Token
-from django.contrib.auth import authenticate
-from django.contrib.auth.models import User
-from rest_framework import status
+from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError
-from api.serializers import RegisterSerializer, LoginSerializer, UserSerializer
-from .models import UserProfile
-from .serializers import UserProfileUpdateSerializer
-        
+from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from api.models import UserProfile
+from api.serializers import RegisterSerializer, LoginSerializer, UserSerializer, UserProfileUpdateSerializer
+
 
 class UserProfileUpdateView(generics.UpdateAPIView):
     queryset = UserProfile.objects.all()
@@ -22,24 +16,23 @@ class UserProfileUpdateView(generics.UpdateAPIView):
     def get_object(self):
         return self.request.user
 
+
 class RegisterView(APIView):
     permission_classes = []
 
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            if user:
-                refresh = RefreshToken.for_user(user)
-                user_serializer = UserSerializer(user)
-                return Response({
-                    'user': user_serializer.data,
-                    'access': str(refresh.access_token),
-                    'refresh': str(refresh),
-                    "message": "Registration successful"
-                })
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        user_serializer = UserSerializer(user)
+        return Response({
+            'user': user_serializer.data,
+            'access': str(refresh.access_token),
+            'refresh': str(refresh),
+            "message": "Registration successful"
+        }, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginView(APIView):
     permission_classes = []
@@ -61,7 +54,7 @@ class LoginView(APIView):
                 "message": "Login successful"
             })
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-    
+
 
 class LogoutView(APIView):
     permission_classes = []
@@ -69,8 +62,8 @@ class LogoutView(APIView):
     def post(self, request):
         try:
             refresh_token = request.data['refresh']
-            token = RefreshToken(refresh_token)
-            token.blacklist()
+            refresh_token = RefreshToken(refresh_token)
+            refresh_token.blacklist()
             return Response({"message": "Logout successful"}, status=status.HTTP_204_NO_CONTENT)
         except TokenError:
             return Response({"message": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
