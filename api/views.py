@@ -29,16 +29,16 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            refresh_token = RefreshToken.for_user(user)
-            access_token = str(refresh_token.access_token)
-            refresh_token = str(refresh_token)
+            
             if user:
-                refresh = RefreshToken.for_user(user)
+                refresh_token = RefreshToken.for_user(user)
+                access_token = str(refresh_token.access_token)
+                refresh_token = str(refresh_token)
                 user_serializer = UserSerializer(user)
                 return Response({
                     'user': user_serializer.data,
-                    'access': str(refresh.access_token),
-                    'refresh': str(refresh),
+                    'access': str(refresh_token.access_token),
+                    'refresh': str(refresh_token),
                     "message": "Registration successful"
                 })
 
