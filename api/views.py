@@ -21,8 +21,10 @@ class UserProfileUpdateView(generics.UpdateAPIView):
 
 class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer
+    permission_classes = []
+    authentication_classes = []
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request: Request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
@@ -39,6 +41,7 @@ class RegisterView(CreateAPIView):
 
 class LoginView(APIView):
     permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -61,7 +64,6 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     permission_classes = []
-    authentication_classes = []
 
     def post(self, request):
         try:
