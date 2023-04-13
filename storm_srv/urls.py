@@ -20,10 +20,10 @@ from api.views import RegisterView, LoginView, LogoutView, TokenRefreshView, Use
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path('api/register/', RegisterView.as_view(), name='register'),
-    path('api/login/', LoginView.as_view(), name='login'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/logout/', LogoutView.as_view(), name='logout'),
-    path('api/userprofile/update/', UserProfileUpdateView.as_view(), name='userprofile-update'),
+    path('register/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('userprofile/update/', UserProfileUpdateView.as_view(), name='userprofile-update'),
 ]
 
