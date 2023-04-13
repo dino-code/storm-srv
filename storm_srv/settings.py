@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-8yhw(v7l50*!aqezstatc&y2@c=&9a3=n0r-ixc=l3f04rnl(g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['api.storm-app.co']
+ALLOWED_HOSTS = ['https://api.storm-app.co']
 
 
 # Application definition
