@@ -24,14 +24,19 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        user_serializer = UserSerializer(user)
-        return Response({
-            'user': user_serializer.data,
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-            "message": "Registration successful"
-        }, status=status.HTTP_201_CREATED)
+        if user:
+            user = authenticate(
+                username=serializer.validated_data['username'],
+                password=serializer.validated_data['password']
+            )
+            refresh = RefreshToken.for_user(user)
+            user_serializer = UserSerializer(user)
+            return Response({
+                'user': user_serializer.data,
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                "message": "Registration successful"
+            }, status=status.HTTP_201_CREATED)
 
 
 class LoginView(APIView):
