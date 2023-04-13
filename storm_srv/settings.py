@@ -168,8 +168,10 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
-""" CORS_ALLOW_METHODS = [
+
+CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
     'OPTIONS',
@@ -188,13 +190,13 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-] """
+]
 
 STATIC_ROOT = 'staticfiles/'
 
-CORS_ALLOWED_ORIGINS = [
+""" CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://storm-app.co',
     'https://www.storm-app.co',
-]
+] """
