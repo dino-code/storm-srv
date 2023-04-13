@@ -18,25 +18,20 @@ class UserProfileUpdateView(generics.UpdateAPIView):
 
 
 class RegisterView(APIView):
-    permission_classes = []
-
     def post(self, request):
-        serializer = RegisterSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        if user:
-            user = authenticate(
-                username=serializer.validated_data['username'],
-                password=serializer.validated_data['password']
-            )
-            refresh = RefreshToken.for_user(user)
-            user_serializer = UserSerializer(user)
-            return Response({
-                'user': user_serializer.data,
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
-                "message": "Registration successful"
-            }, status=status.HTTP_201_CREATED)
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        if not username or not password:
+            return Response({'error': 'Username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(username=username).exists():
+            return Response({'error': 'Username is already taken.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = User.objects.create_user(username=username, password=password)
+        refresh = RefreshToken.for_user(user)
+
+        return Response({'access_token': str(refresh.access_token)}, status=status.HTTP_201_CREATED)
 
 
 class LoginView(APIView):
