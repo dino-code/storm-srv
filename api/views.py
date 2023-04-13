@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken, TokenError, AccessToken
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from api.serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from .models import UserProfile
 from .serializers import UserProfileUpdateSerializer
@@ -29,17 +29,13 @@ class RegisterView(APIView):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            
             if user:
-                refresh_token = RefreshToken.for_user(user)
-                access_token = AccessToken.for_user(user)
-                refresh_token = str(refresh_token)
-                access_token = str(access_token)
+                refresh = RefreshToken.for_user(user)
                 user_serializer = UserSerializer(user)
                 return Response({
                     'user': user_serializer.data,
-                    'access': str(access_token),
-                    'refresh': str(refresh_token),
+                    'access': str(refresh.access_token),
+                    'refresh': str(refresh),
                     "message": "Registration successful"
                 })
 
@@ -56,15 +52,13 @@ class LoginView(APIView):
             password=serializer.validated_data['password']
         )
         if user:
-            refresh_token = RefreshToken.for_user(user)
-            access_token = AccessToken.for_user(user)
-            refresh_token = str(refresh_token)
-            access_token = str(access_token)
+            refresh = RefreshToken.for_user(user)
             user_serializer = UserSerializer(user)
             return Response({
                 'user': user_serializer.data,
-                'access': str(access_token),
-                'refresh': str(refresh_token),
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+                "message": "Login successful"
             })
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
     
