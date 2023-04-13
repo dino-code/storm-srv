@@ -32,9 +32,10 @@ class RegisterView(APIView):
             return Response({'error': 'Username is already taken.'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(username=username, password=password)
+        user_serializer = UserSerializer(user)
         refresh = RefreshToken.for_user(user)
 
-        return Response({'access_token': str(refresh.access_token)}, status=status.HTTP_201_CREATED)
+        return Response({'access_token': str(refresh.access_token), 'refresh': str(refresh), 'user': user_serializer.data}, status=status.HTTP_201_CREATED)
 
 
 class LoginView(APIView):
@@ -61,6 +62,7 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     permission_classes = []
+    authentication_classes = []
 
     def post(self, request):
         try:
