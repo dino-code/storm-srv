@@ -56,12 +56,15 @@ class LoginView(APIView):
             password=serializer.validated_data['password']
         )
         if user:
-            refresh = RefreshToken.for_user(user)
+            refresh_token = RefreshToken.for_user(user)
+            access_token = AccessToken.for_user(user)
+            refresh_token = str(refresh_token)
+            access_token = str(access_token)
             user_serializer = UserSerializer(user)
             return Response({
                 'user': user_serializer.data,
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
+                'access': str(access_token),
+                'refresh': str(refresh_token),
             })
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
     
