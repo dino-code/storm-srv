@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.request import Request
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
@@ -18,7 +19,9 @@ class UserProfileUpdateView(generics.UpdateAPIView):
 
 
 class RegisterView(APIView):
-    def post(self, request):
+    authentication_classes = []
+    permission_classes = []
+    def post(self, request: Request):
         username = request.data.get('username')
         password = request.data.get('password')
 
