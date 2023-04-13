@@ -169,7 +169,7 @@ SIMPLE_JWT = {
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOW_METHODS = [
+""" CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
     'OPTIONS',
@@ -188,7 +188,7 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-]
+] """
 
 STATIC_ROOT = 'staticfiles/'
 
