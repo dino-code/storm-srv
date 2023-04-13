@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-8yhw(v7l50*!aqezstatc&y2@c=&9a3=n0r-ixc=l3f04rnl(g
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['api.storm-app.co']
 
 
 # Application definition
@@ -177,4 +177,6 @@ CORS_ALLOWED_ORIGINS = [
     'https://storm-9zzfd2a8k-dino-code.vercel.app',
     'https://storm-red.vercel.app',
     'https://storm-srv.herokuapp.com',
+    'https://storm-app.co',
+    'https://www.storm-app.co',
 ]
