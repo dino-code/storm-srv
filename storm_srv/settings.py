@@ -174,6 +174,7 @@ STATIC_ROOT = 'staticfiles/'
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
+    'storm-9zzfd2a8k-dino-code.vercel.app',
     'https://storm-red.vercel.app',
     'https://storm-srv.herokuapp.com',
 ]
