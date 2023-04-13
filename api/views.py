@@ -1,6 +1,7 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.generics import CreateAPIView
 from rest_framework.request import Request
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -18,24 +19,22 @@ class UserProfileUpdateView(generics.UpdateAPIView):
         return self.request.user
 
 
-class RegisterView(APIView):
-    authentication_classes = []
-    permission_classes = []
-    def post(self, request: Request):
-        username = request.data.get('username')
-        password = request.data.get('password')
+class RegisterView(CreateAPIView):
+    serializer_class = RegisterSerializer
 
-        if not username or not password:
-            return Response({'error': 'Username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
 
-        if User.objects.filter(username=username).exists():
-            return Response({'error': 'Username is already taken.'}, status=status.HTTP_400_BAD_REQUEST)
-
-        user = User.objects.create_user(username=username, password=password)
-        user_serializer = UserSerializer(user)
         refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
 
-        return Response({'access_token': str(refresh.access_token), 'refresh': str(refresh), 'user': user_serializer.data}, status=status.HTTP_201_CREATED)
+        response_data = {
+            'access_token': access_token,
+            'refresh_token': str(refresh),
+        }
+        return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class LoginView(APIView):
