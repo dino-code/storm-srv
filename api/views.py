@@ -29,14 +29,17 @@ class RegisterView(CreateAPIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
+        if user:
+            user_serializer = UserSerializer(user)
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
 
-        response_data = {
-            'access_token': access_token,
-            'refresh_token': str(refresh),
-        }
-        return Response(response_data, status=status.HTTP_201_CREATED)
+            response_data = {
+                'user': user_serializer.data,
+                'access_token': access_token,
+                'refresh_token': str(refresh),
+            }
+            return Response(response_data, status=status.HTTP_201_CREATED)
 
 
 class LoginView(APIView):
