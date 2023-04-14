@@ -25,7 +25,7 @@ class RegisterView(CreateAPIView):
     authentication_classes = []
 
     def create(self, request: Request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
