@@ -43,7 +43,7 @@ class LoginView(APIView):
     permission_classes = []
     authentication_classes = []
 
-    def post(self, request):
+    def post(self, request: Request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = authenticate(
@@ -55,8 +55,8 @@ class LoginView(APIView):
             user_serializer = UserSerializer(user)
             return Response({
                 'user': user_serializer.data,
-                'access': str(refresh.access_token),
-                'refresh': str(refresh),
+                'access_token': str(refresh.access_token),
+                'refresh_token': str(refresh),
                 "message": "Login successful"
             })
         return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -76,14 +76,14 @@ class LogoutView(APIView):
 
 
 class TokenRefreshView(APIView):
-    def post(self, request):
+    def post(self, request: Request):
         refresh_token = request.data.get('refresh')
         if refresh_token:
             try:
                 token = RefreshToken(refresh_token)
                 new_access_token = str(token.access_token)
                 token.refresh()
-                return Response({"access": new_access_token})
+                return Response({"access_token": new_access_token})
             except TokenError:
                 return Response({"message": "Invalid refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
         return Response({"message": "Refresh token not provided"}, status=status.HTTP_400_BAD_REQUEST)
